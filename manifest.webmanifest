@@ -1,0 +1,13 @@
+{
+  "name": "Moments Personal Gallery",
+  "short_name": "Moments",
+  "description": "A simple personal photo gallery",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c1020",
+  "theme_color": "#0c1020",
+  "icons": [
+    {"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}
