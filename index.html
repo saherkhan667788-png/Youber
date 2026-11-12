@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c1020">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Moments — Your Personal Gallery</title>
+<style>
+:root{--bg:#0c1020;--panel:#151b30;--muted:#9ba6c4;--text:#f4f6ff;--accent:#9b8cff;--line:#27304b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#24234a 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+.wrap{max-width:1120px;margin:auto;padding:30px 22px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:44px}
+.brand{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:750;letter-spacing:-.5px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#a99aff,#6b7cff);display:grid;place-items:center;font-size:21px;box-shadow:0 8px 28px #8175ff44}
+.tag{color:#b8b0ff;background:#8175ff1b;border:1px solid #8175ff55;padding:7px 12px;border-radius:99px;font-size:12px}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}.eyebrow{color:#aaa0ff;text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:750}.hero h1{font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-2px;margin:9px 0 12px}.hero p{color:var(--muted);margin:0;max-width:520px}
+.upload{border:0;background:linear-gradient(135deg,#a99aff,#777fff);color:#101329;font-weight:750;padding:13px 18px;border-radius:13px;cursor:pointer;white-space:nowrap;box-shadow:0 8px 25px #8175ff35}.upload:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.toolbar{display:flex;gap:12px;align-items:center;margin:28px 0 20px;flex-wrap:wrap}.search{flex:1;min-width:190px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);outline:none}.search:focus{border-color:#9285ff}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter{border:1px solid var(--line);background:#151b30;color:#aeb7d1;padding:9px 13px;border-radius:10px;cursor:pointer}.filter.active{background:#8175ff25;color:#dcd7ff;border-color:#8276ff}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin:18px 2px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.tile{position:relative;overflow:hidden;border-radius:17px;background:#1a2036;aspect-ratio:4/3;border:1px solid #ffffff0c;cursor:pointer}.tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}.tile:hover img{transform:scale(1.045)}.tile:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#070a16b8);pointer-events:none}.tile-name{position:absolute;z-index:1;bottom:12px;left:14px;font-weight:650;text-shadow:0 2px 8px #000}.empty{grid-column:1/-1;text-align:center;padding:58px 20px;background:#151b30;border:1px dashed #3b4564;border-radius:18px;color:var(--muted)}.empty b{display:block;color:var(--text);font-size:18px;margin-bottom:6px}
+.note{color:#7f8aa9;font-size:12px;margin-top:25px;text-align:center}
+.viewer{position:fixed;inset:0;background:#050711ed;display:none;align-items:center;justify-content:center;padding:24px;z-index:5}.viewer.open{display:flex}.viewer img{max-width:min(100%,1000px);max-height:82vh;object-fit:contain;border-radius:12px}.close,.delete{position:absolute;border:1px solid #ffffff35;background:#202640;color:white;border-radius:11px;padding:10px 13px;cursor:pointer}.close{top:20px;right:20px}.delete{bottom:20px;right:20px;background:#522b3b}.viewer-title{position:absolute;bottom:25px;left:24px;color:#dbe0f4}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{align-items:start;flex-direction:column}.top{margin-bottom:34px}}
+@media(max-width:480px){.wrap{padding:20px 14px 40px}.grid{gap:10px}.tile{border-radius:12px}.tag{display:none}.hero h1{letter-spacing:-1px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><div class="brand"><div class="logo">✦</div> moments</div><div class="tag">YOUR PERSONAL SPACE</div></header>
+  <section class="hero">
+    <div><div class="eyebrow">A little place for memories</div><h1>Your moments,<br>beautifully kept.</h1><p>A simple, private gallery for the photos you love. Add your own pictures and browse them in one calm space.</p></div>
+    <label class="upload" for="fileInput">＋ Add photos</label><input id="fileInput" type="file" accept="image/*" multiple hidden>
+  </section>
+  <div class="toolbar"><input class="search" id="search" type="search" placeholder="Search your photos…"><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="favorites">Favorites</button><button class="filter" data-filter="uploads">My uploads</button></div></div>
+  <div class="meta"><span id="count">Your collection</span><span>Tap a photo to view</span></div>
+  <main class="grid" id="gallery"></main>
+  <p class="note">Your uploaded photos stay in this browser on this device. This demo does not send them to a server.</p>
+</div>
+<div class="viewer" id="viewer"><button class="close" id="close">✕ Close</button><img id="largeImage" alt="Selected photo"><div class="viewer-title" id="viewerTitle"></div><button class="delete" id="delete">Delete photo</button></div>
+<script>
+const starter=[
+ {id:'s1',name:'Golden hour',src:'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=900&q=85',kind:'sample',favorite:true},
+ {id:'s2',name:'Quiet escape',src:'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=900&q=85',kind:'sample',favorite:false},
+ {id:'s3',name:'Ocean blues',src:'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=900&q=85',kind:'sample',favorite:true},
+ {id:'s4',name:'Soft details',src:'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=900&q=85',kind:'sample',favorite:false},
+ {id:'s5',name:'Open road',src:'https://images.unsplash.com/photo-1464852045489-bcfb8d6e6e5a?w=900&q=85',kind:'sample',favorite:false},
+ {id:'s6',name:'Little moments',src:'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=900&q=85',kind:'sample',favorite:true}
+];
+let photos=[...starter];let filter='all';let selected=null;
+const gallery=document.querySelector('#gallery'),count=document.querySelector('#count');
+function render(){
+ const q=document.querySelector('#search').value.toLowerCase();
+ const shown=photos.filter(p=>(filter==='all'||(filter==='favorites'&&p.favorite)||(filter==='uploads'&&p.kind==='upload'))&&p.name.toLowerCase().includes(q));
+ count.textContent=`${shown.length} ${shown.length===1?'photo':'photos'}`;
+ gallery.innerHTML='';
+ if(!shown.length){gallery.innerHTML='<div class="empty"><b>No photos found</b>Try another search or add a photo to your collection.</div>';return}
+ shown.forEach(p=>{const el=document.createElement('article');el.className='tile';const img=document.createElement('img');img.src=p.src;img.alt=p.name;img.loading='lazy';const title=document.createElement('div');title.className='tile-name';title.textContent=(p.favorite?'♥  ':'')+p.name;el.append(img,title);el.addEventListener('click',()=>openViewer(p.id));gallery.append(el)});
+}
+function openViewer(id){selected=id;const p=photos.find(x=>x.id===id);if(!p)return;document.querySelector('#largeImage').src=p.src;document.querySelector('#largeImage').alt=p.name;document.querySelector('#viewerTitle').textContent=p.name;document.querySelector('#viewer').classList.add('open')}
+function closeViewer(){document.querySelector('#viewer').classList.remove('open');selected=null}
+document.querySelector('#close').onclick=closeViewer;
+document.querySelector('#viewer').addEventListener('click',e=>{if(e.target.id==='viewer')closeViewer()});
+document.querySelector('#delete').onclick=()=>{if(!selected)return;const p=photos.find(x=>x.id===selected);if(p&&p.kind==='upload'){photos=photos.filter(x=>x.id!==selected);render()}closeViewer()};
+document.querySelector('#search').addEventListener('input',render);
+document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
+document.querySelector('#fileInput').addEventListener('change',e=>{
+ const files=[...e.target.files].filter(f=>f.type.startsWith('image/'));
+ files.forEach(file=>{const reader=new FileReader();reader.onload=()=>{photos.unshift({id:'u'+Date.now()+Math.random(),name:file.name.replace(/\.[^.]+$/,''),src:reader.result,kind:'upload',favorite:false});render()};reader.readAsDataURL(file)});
+ e.target.value='';
+});
+render();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
